@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  nexcrm-api:
+    build: ./nexcrm-api
+    container_name: nexcrm-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/nexcrm.db
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-me}
+      - CORS_ORIGINS=http://localhost:3000
+    volumes:
+      - nexcrm-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nexcrm-web:
+    build: ./nexcrm-web
+    container_name: nexcrm-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      nexcrm-api:
+        condition: service_healthy
+
+volumes:
+  nexcrm-data:

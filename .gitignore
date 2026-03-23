@@ -1,0 +1,18 @@
+# Backend
+nexcrm-api/.venv/
+nexcrm-api/data/
+nexcrm-api/__pycache__/
+nexcrm-api/*.pyc
+nexcrm-api/.pytest_cache/
+nexcrm-api/.coverage
+nexcrm-api/*.db
+nexcrm-api/.env
+
+# Frontend
+nexcrm-web/node_modules/
+nexcrm-web/dist/
+nexcrm-web/.env
+
+# OS
+.DS_Store
+Thumbs.db
