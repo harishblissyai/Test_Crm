@@ -9,6 +9,7 @@ class ContactCreate(BaseModel):
     phone: Optional[str] = None
     company: Optional[str] = None
     notes: Optional[str] = None
+    tags: Optional[list[str]] = []
 
 
 class ContactUpdate(BaseModel):
@@ -17,6 +18,7 @@ class ContactUpdate(BaseModel):
     phone: Optional[str] = None
     company: Optional[str] = None
     notes: Optional[str] = None
+    tags: Optional[list[str]] = None
 
 
 class ContactOut(BaseModel):
@@ -26,6 +28,7 @@ class ContactOut(BaseModel):
     phone: Optional[str] = None
     company: Optional[str] = None
     notes: Optional[str] = None
+    tags: Optional[list[str]] = []
     created_by: int
     created_at: datetime
     updated_at: Optional[datetime] = None

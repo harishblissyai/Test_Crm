@@ -16,6 +16,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useDroppable } from '@dnd-kit/core'
 import { leadsApi } from '../api/leads'
 import { Link } from 'react-router-dom'
+import { TagBadge } from '../components/TagInput'
 import toast from 'react-hot-toast'
 
 const STATUSES = [
@@ -42,6 +43,12 @@ function LeadCard({ lead, isDragging }) {
       </Link>
       {lead.contact_name && (
         <p className="text-xs text-gray-500 mt-1 truncate">{lead.contact_name}</p>
+      )}
+      {lead.tags?.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-2">
+          {lead.tags.slice(0, 3).map(t => <TagBadge key={t} tag={t} />)}
+          {lead.tags.length > 3 && <span className="text-xs text-gray-400">+{lead.tags.length - 3}</span>}
+        </div>
       )}
       {lead.value && (
         <p className="text-xs font-semibold text-primary-600 mt-2">

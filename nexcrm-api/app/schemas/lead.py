@@ -11,6 +11,7 @@ class LeadCreate(BaseModel):
     status: LeadStatus = LeadStatus.New
     value: Optional[float] = None
     notes: Optional[str] = None
+    tags: Optional[list[str]] = []
 
 
 class LeadUpdate(BaseModel):
@@ -19,6 +20,7 @@ class LeadUpdate(BaseModel):
     status: Optional[LeadStatus] = None
     value: Optional[float] = None
     notes: Optional[str] = None
+    tags: Optional[list[str]] = None
 
 
 class LeadStatusUpdate(BaseModel):
@@ -32,6 +34,7 @@ class LeadOut(BaseModel):
     status: LeadStatus
     value: Optional[float] = None
     notes: Optional[str] = None
+    tags: Optional[list[str]] = []
     created_by: int
     created_at: datetime
     updated_at: Optional[datetime] = None

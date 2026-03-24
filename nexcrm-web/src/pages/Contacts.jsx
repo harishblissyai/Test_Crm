@@ -6,6 +6,7 @@ import DataTable from '../components/DataTable'
 import Modal from '../components/Modal'
 import ContactForm from '../components/ContactForm'
 import ImportModal from '../components/ImportModal'
+import { TagBadge } from '../components/TagInput'
 import toast from 'react-hot-toast'
 
 export default function Contacts() {
@@ -18,15 +19,16 @@ export default function Contacts() {
   const [showImport, setShowImport] = useState(false)
   const [editing, setEditing] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [tagFilter, setTagFilter] = useState('')
 
-  const load = (p = page, s = search) => {
+  const load = (p = page, s = search, t = tagFilter) => {
     setLoading(true)
-    contactsApi.list({ page: p, size: 20, search: s || undefined })
+    contactsApi.list({ page: p, size: 20, search: s || undefined, tag: t || undefined })
       .then(setData)
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { load() }, [page])
+  useEffect(() => { load() }, [page, tagFilter])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -70,6 +72,7 @@ export default function Contacts() {
     { key: 'email', label: 'Email', render: r => r.email || <span className="text-gray-400">—</span> },
     { key: 'phone', label: 'Phone', render: r => r.phone || <span className="text-gray-400">—</span> },
     { key: 'company', label: 'Company', render: r => r.company || <span className="text-gray-400">—</span> },
+    { key: 'tags', label: 'Tags', render: r => r.tags?.length ? <div className="flex flex-wrap gap-1">{r.tags.map(t => <TagBadge key={t} tag={t} />)}</div> : <span className="text-gray-400">—</span> },
     { key: 'actions', label: '', render: r => (
       <div className="flex gap-1 justify-end">
         <button onClick={() => { setEditing(r); setShowModal(true) }} className="btn-secondary p-1.5"><PencilIcon className="h-4 w-4" /></button>
@@ -98,12 +101,23 @@ export default function Contacts() {
         </div>
       </div>
 
-      <form onSubmit={handleSearch} className="flex gap-2 max-w-sm">
+      <form onSubmit={handleSearch} className="flex flex-wrap gap-2 items-center">
         <div className="relative flex-1">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search contacts…" className="input pl-9" />
         </div>
         <button type="submit" className="btn-secondary">Search</button>
+        <input
+          value={tagFilter}
+          onChange={e => { setTagFilter(e.target.value); setPage(1) }}
+          placeholder="Filter by tag…"
+          className="input w-40 text-sm"
+        />
+        {tagFilter && (
+          <button onClick={() => { setTagFilter(''); setPage(1) }} className="text-xs text-gray-500 hover:text-gray-700 underline">
+            Clear tag
+          </button>
+        )}
       </form>
 
       <DataTable columns={columns} data={data.items} loading={loading} page={page} pages={data.pages} onPageChange={setPage} emptyMessage="No contacts yet. Create your first one!" />

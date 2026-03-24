@@ -9,7 +9,7 @@ from app.models.lead import Lead
 from app.schemas.contact import ContactCreate, ContactUpdate
 
 
-def list_contacts(db: Session, user_id: int, page: int, size: int, search: str | None):
+def list_contacts(db: Session, user_id: int, page: int, size: int, search: str | None, tag: str | None = None):
     q = db.query(Contact)
     if search:
         term = f"%{search}%"
@@ -20,6 +20,9 @@ def list_contacts(db: Session, user_id: int, page: int, size: int, search: str |
                 Contact.company.ilike(term),
             )
         )
+    if tag:
+        # JSON contains check — works for SQLite JSON arrays
+        q = q.filter(Contact.tags.like(f'%"{tag}"%'))
     total = q.count()
     items = q.order_by(Contact.created_at.desc()).offset((page - 1) * size).limit(size).all()
     return {"items": items, "total": total, "page": page, "size": size, "pages": math.ceil(total / size) if total else 1}

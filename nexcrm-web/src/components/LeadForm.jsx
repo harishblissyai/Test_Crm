@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import TagInput from './TagInput'
 
 const STATUSES = ['New', 'Contacted', 'Qualified', 'ClosedWon', 'ClosedLost']
 
@@ -9,6 +10,7 @@ export default function LeadForm({ initial = {}, contacts = [], onSubmit, onCanc
     status: initial.status ?? 'New',
     value: initial.value ?? '',
     notes: initial.notes ?? '',
+    tags: initial.tags ?? [],
   })
   const [errors, setErrors] = useState({})
 
@@ -26,6 +28,7 @@ export default function LeadForm({ initial = {}, contacts = [], onSubmit, onCanc
       ...form,
       contact_id: form.contact_id ? Number(form.contact_id) : null,
       value: form.value !== '' ? Number(form.value) : null,
+      tags: form.tags,
     }
     onSubmit(payload)
   }
@@ -61,6 +64,11 @@ export default function LeadForm({ initial = {}, contacts = [], onSubmit, onCanc
       <div>
         <label className="label">Notes</label>
         <textarea value={form.notes} onChange={set('notes')} rows={3} placeholder="Any notes…" className="input resize-none" />
+      </div>
+      <div>
+        <label className="label">Tags</label>
+        <TagInput tags={form.tags} onChange={tags => setForm(f => ({ ...f, tags }))} />
+        <p className="text-xs text-gray-400 mt-1">Press Enter or comma to add a tag</p>
       </div>
       <div className="flex gap-3 pt-2">
         <button type="submit" className="btn-primary flex-1" disabled={loading}>

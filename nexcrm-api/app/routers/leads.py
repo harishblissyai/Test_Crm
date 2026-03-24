@@ -20,10 +20,11 @@ def list_leads(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     status: Optional[LeadStatus] = Query(None),
+    tag: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return svc.list_leads(db, current_user.id, page, size, status)
+    return svc.list_leads(db, current_user.id, page, size, status, tag)
 
 
 @router.post("", response_model=LeadOut, status_code=201)

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import TagInput from './TagInput'
 
 export default function ContactForm({ initial = {}, onSubmit, onCancel, loading }) {
   const [form, setForm] = useState({
@@ -7,6 +8,7 @@ export default function ContactForm({ initial = {}, onSubmit, onCancel, loading 
     phone: initial.phone ?? '',
     company: initial.company ?? '',
     notes: initial.notes ?? '',
+    tags: initial.tags ?? [],
   })
   const [errors, setErrors] = useState({})
 
@@ -54,6 +56,11 @@ export default function ContactForm({ initial = {}, onSubmit, onCancel, loading 
       <div>
         <label className="label">Notes</label>
         <textarea {...field('notes')} rows={3} placeholder="Any notes…" className={`input resize-none ${errors.notes ? 'border-red-400' : ''}`} />
+      </div>
+      <div>
+        <label className="label">Tags</label>
+        <TagInput tags={form.tags} onChange={tags => setForm(f => ({ ...f, tags }))} />
+        <p className="text-xs text-gray-400 mt-1">Press Enter or comma to add a tag</p>
       </div>
       <div className="flex gap-3 pt-2">
         <button type="submit" className="btn-primary flex-1" disabled={loading}>

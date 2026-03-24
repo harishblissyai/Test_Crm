@@ -7,10 +7,12 @@ from app.models.lead import Lead, LeadStatus
 from app.schemas.lead import LeadCreate, LeadUpdate
 
 
-def list_leads(db: Session, user_id: int, page: int, size: int, status: LeadStatus | None):
+def list_leads(db: Session, user_id: int, page: int, size: int, status: LeadStatus | None, tag: str | None = None):
     q = db.query(Lead)
     if status:
         q = q.filter(Lead.status == status)
+    if tag:
+        q = q.filter(Lead.tags.like(f'%"{tag}"%'))
     total = q.count()
     items = q.order_by(Lead.created_at.desc()).offset((page - 1) * size).limit(size).all()
     return {"items": items, "total": total, "page": page, "size": size, "pages": math.ceil(total / size) if total else 1}
