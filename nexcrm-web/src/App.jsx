@@ -8,6 +8,7 @@ import ContactDetail from './pages/ContactDetail'
 import Leads from './pages/Leads'
 import LeadDetail from './pages/LeadDetail'
 import Activities from './pages/Activities'
+import Kanban from './pages/Kanban'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="leads" element={<Leads />} />
         <Route path="leads/:id" element={<LeadDetail />} />
         <Route path="activities" element={<Activities />} />
+        <Route path="kanban" element={<Kanban />} />
       </Route>
     </Routes>
   )
