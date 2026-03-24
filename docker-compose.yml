@@ -1,33 +1,44 @@
-version: "3.9"
+name: nexcrm
 
 services:
+
   nexcrm-api:
-    build: ./nexcrm-api
+    build:
+      context: ./nexcrm-api
+      dockerfile: Dockerfile
     container_name: nexcrm-api
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8080:8000"
     environment:
-      - DATABASE_URL=sqlite:///./data/nexcrm.db
-      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-me}
-      - CORS_ORIGINS=http://localhost:3000
+      DATABASE_URL: sqlite:///./data/nexcrm.db
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production-use-a-long-random-string}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 1440
+      CORS_ORIGINS: "http://localhost:4000,http://localhost:3000,http://nexcrm-web"
     volumes:
       - nexcrm-data:/app/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 15s
 
   nexcrm-web:
-    build: ./nexcrm-web
+    build:
+      context: ./nexcrm-web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
     container_name: nexcrm-web
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "4000:80"
     depends_on:
       nexcrm-api:
         condition: service_healthy
 
 volumes:
   nexcrm-data:
+    driver: local
