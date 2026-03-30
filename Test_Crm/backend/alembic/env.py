@@ -25,8 +25,8 @@ from alembic import context
 from app.core.config import settings
 from app.db.session import Base
 
-# Import models here as they are created so Alembic detects schema changes.
-# Module 2 will add: from app.models.user import User, etc.
+# Import all models here so Alembic can detect schema changes for autogenerate.
+from app.models.user import RefreshToken, Tenant, User  # noqa: F401
 
 # ── Alembic config ─────────────────────────────────────────────
 alembic_cfg = context.config

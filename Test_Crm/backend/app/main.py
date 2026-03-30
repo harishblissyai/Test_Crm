@@ -16,6 +16,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
+from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
@@ -68,6 +69,7 @@ def create_app() -> FastAPI:
 
     # ── Routers ────────────────────────────────────────────────
     app.include_router(health_router, prefix=settings.API_PREFIX)
+    app.include_router(auth_router, prefix=settings.API_PREFIX)
 
     return app
 

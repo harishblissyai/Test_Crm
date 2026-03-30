@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     # ── CORS ───────────────────────────────────────────────────
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
+    # ── Bootstrap ─────────────────────────────────────────────
+    # Used once to create the very first Super Admin.
+    # Set a strong secret in .env; keep it private.
+    BOOTSTRAP_SECRET: str = "change-this-bootstrap-secret"
+
     # ── Rate Limiting ──────────────────────────────────────────
     RATE_LIMIT_PER_MINUTE: int = 60
 
