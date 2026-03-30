@@ -33,6 +33,7 @@ class Tenant(Base):
     )
 
     users: Mapped[list["User"]] = relationship(back_populates="tenant")
+    clients: Mapped[list["Client"]] = relationship(back_populates="tenant")  # type: ignore[name-defined]
 
 
 class User(Base):

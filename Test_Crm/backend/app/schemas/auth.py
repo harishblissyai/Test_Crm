@@ -18,6 +18,8 @@ class RegisterRequest(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     is_operator: bool = False
+    # When creating an operator, Super Admin specifies which tenant they belong to
+    tenant_id: UUID | None = None
 
     @field_validator("password")
     @classmethod

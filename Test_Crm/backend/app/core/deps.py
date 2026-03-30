@@ -1,5 +1,5 @@
 """
-FastAPI dependencies for authentication and authorization.
+FastAPI dependencies for authentication, authorization, and tenant isolation.
 
 Usage in route:
     @router.get("/protected")
@@ -9,7 +9,14 @@ Usage in route:
     @router.post("/admin-only")
     async def route(user: User = Depends(require_super_admin)):
         ...
+
+    @router.get("/clients")
+    async def route(tenant_id: uuid.UUID = Depends(require_tenant_context)):
+        # tenant_id is always the operator's own tenant — no cross-tenant leakage
+        ...
 """
+
+import uuid
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -76,3 +83,44 @@ async def require_operator(user: User = Depends(get_current_user)) -> User:
             detail="Operator access required",
         )
     return user
+
+
+# ── Tenant isolation ───────────────────────────────────────────────────────
+
+async def require_tenant_context(user: User = Depends(require_operator)) -> uuid.UUID:
+    """
+    Returns the operator's tenant_id — enforces tenant isolation on every route.
+    Super Admins without a tenant_id must use admin routes instead.
+    """
+    if not user.tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is not associated with a tenant. Contact Super Admin.",
+        )
+    return user.tenant_id
+
+
+async def verify_client_access(
+    client_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_operator),
+):
+    """
+    Shared dependency: loads a Client and verifies the caller has access to it.
+    - Super Admins can access any client.
+    - Operators can only access clients in their own tenant.
+
+    Returns the Client object so it can be used directly in the route handler.
+    Import Client here lazily to avoid circular imports at module load.
+    """
+    from app.models.client import Client
+
+    client = await db.get(Client, client_id)
+    if not client:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Client not found")
+
+    if not user.is_super_admin and str(client.tenant_id) != str(user.tenant_id):
+        # Return 404 instead of 403 — don't reveal that the client exists in another tenant
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Client not found")
+
+    return client

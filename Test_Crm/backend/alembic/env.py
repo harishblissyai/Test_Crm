@@ -27,6 +27,7 @@ from app.db.session import Base
 
 # Import all models here so Alembic can detect schema changes for autogenerate.
 from app.models.user import RefreshToken, Tenant, User  # noqa: F401
+from app.models.client import Client  # noqa: F401
 
 # ── Alembic config ─────────────────────────────────────────────
 alembic_cfg = context.config

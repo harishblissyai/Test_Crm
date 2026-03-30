@@ -9,6 +9,7 @@ All error responses follow the same JSON shape:
 import logging
 
 from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -40,7 +41,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
                 "detail": "Validation error",
-                "errors": exc.errors(),
+                "errors": jsonable_encoder(exc.errors()),
                 "request_id": _request_id(request),
             },
         )

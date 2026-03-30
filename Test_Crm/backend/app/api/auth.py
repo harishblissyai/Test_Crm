@@ -161,6 +161,7 @@ async def register_user(
         last_name=body.last_name,
         is_super_admin=False,
         is_operator=body.is_operator,
+        tenant_id=body.tenant_id,
     )
     db.add(user)
     await db.flush()
